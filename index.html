@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Task Manager</h1>
+            <div id="auth-section">
+                <!-- Login/Register Forms -->
+                <div id="login-register" class="auth-forms">
+                    <div class="auth-toggle">
+                        <button class="nav-btn active" onclick="showAuthForm('login', this)">Login</button>
+                        <button class="nav-btn" onclick="showAuthForm('register', this)">Register</button>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <div id="login-form" class="auth-form">
+                        <form id="login-form-element">
+                            <div class="form-group">
+                                <input type="email" id="login-email" placeholder="Email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" id="login-password" placeholder="Password" required>
+                            </div>
+                            <button type="submit" class="btn">Login</button>
+                        </form>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div id="register-form" class="auth-form hidden">
+                        <form id="register-form-element">
+                            <div class="form-group">
+                                <input type="text" id="register-username" placeholder="Username" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="register-email" placeholder="Email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" id="register-password" placeholder="Password (min 6 chars)" required>
+                            </div>
+                            <button type="submit" class="btn">Register</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- User Info (when logged in) -->
+                <div id="user-info" class="user-info hidden">
+                    <span id="user-name">Welcome, User!</span>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Main Navigation (hidden until logged in) -->
+            <nav class="nav hidden" id="main-nav">
+                <button class="nav-btn active" onclick="showSection('projects', this)">Projects</button>
+                <button class="nav-btn" onclick="showSection('tasks', this)">Tasks</button>
+            </nav>
+        </header>
+
+        <!-- Main Content (hidden until authenticated) -->
+        <div class="main-content" id="main-content">
+            <!-- Projects Section -->
+            <div id="projects-section" class="section">
+                <h2>Projects Management</h2>
+                
+                <div class="form-group">
+                    <h3>Create New Project</h3>
+                    <form id="project-form">
+                        <div class="form-group">
+                            <label for="project-name">Project Name:</label>
+                            <input type="text" id="project-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-description">Description:</label>
+                            <textarea id="project-description" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Create Project</button>
+                    </form>
+                </div>
+
+                <div id="projects-list">
+                    <h3>My Projects</h3>
+                    <div id="projects-container" class="grid">
+                        <div class="loading">Loading projects...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div id="tasks-section" class="section hidden">
+                <h2>Tasks Management</h2>
+                
+                <!-- View Toggle -->
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="switchView('list')">List View</button>
+                    <button class="view-btn" onclick="switchView('kanban')">Kanban Board</button>
+                </div>
+                
+                <div class="form-group">
+                    <h3>Create New Task</h3>
+                    <form id="task-form">
+                        <div class="form-group">
+                            <label for="task-title">Task Title:</label>
+                            <input type="text" id="task-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-description">Description:</label>
+                            <textarea id="task-description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-project">Project:</label>
+                            <select id="task-project" required>
+                                <option value="">Select Project...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-assigned">Assigned To:</label>
+                            <select id="task-assigned">
+                                <option value="">Unassigned</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-created-by">Created By:</label>
+                            <select id="task-created-by" required>
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-priority">Priority:</label>
+                            <select id="task-priority">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-due-date">Due Date:</label>
+                            <input type="datetime-local" id="task-due-date">
+                        </div>
+                        <button type="submit" class="btn">Create Task</button>
+                    </form>
+                </div>
+
+                <!-- List View -->
+                <div id="list-view" class="list-view">
+                    <h3>Tasks List</h3>
+                    <div id="tasks-container" class="grid">
+                        <div class="loading">Loading tasks...</div>
+                    </div>
+                </div>
+
+                <!-- Kanban View -->
+                <div id="kanban-view" class="kanban-view">
+                    <h3>Kanban Board</h3>
+                    <div class="kanban-container">
+                        <div class="kanban-column" data-status="ToDo">
+                            <div class="kanban-header">
+                                <span class="kanban-title">To Do</span>
+                                <span class="task-count" id="todo-count">0</span>
+                            </div>
+                            <div class="kanban-tasks" id="todo-tasks"></div>
+                        </div>
+                        
+                        <div class="kanban-column" data-status="InProgress">
+                            <div class="kanban-header">
+                                <span class="kanban-title">In Progress</span>
+                                <span class="task-count" id="inprogress-count">0</span>
+                            </div>
+                            <div class="kanban-tasks" id="inprogress-tasks"></div>
+                        </div>
+                        
+                        <div class="kanban-column" data-status="Done">
+                            <div class="kanban-header">
+                                <span class="kanban-title">Done</span>
+                                <span class="task-count" id="done-count">0</span>
+                            </div>
+                            <div class="kanban-tasks" id="done-tasks"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Edit Modal -->
+            <div id="task-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit Task</h3>
+                        <span class="close" onclick="closeTaskModal()">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-task-form">
+                            <div class="form-group">
+                                <label for="edit-task-title">Task Title:</label>
+                                <input type="text" id="edit-task-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-task-description">Description:</label>
+                                <textarea id="edit-task-description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-task-assigned">Assigned To:</label>
+                                <select id="edit-task-assigned">
+                                    <option value="">Unassigned</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-task-priority">Priority:</label>
+                                <select id="edit-task-priority">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-task-due-date">Due Date:</label>
+                                <input type="datetime-local" id="edit-task-due-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-task-status">Status:</label>
+                                <select id="edit-task-status">
+                                    <option value="ToDo">To Do</option>
+                                    <option value="InProgress">In Progress</option>
+                                    <option value="Done">Done</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="deleteTask()">Delete</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                        <button type="button" class="btn" onclick="saveTaskChanges()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
