@@ -26,7 +26,7 @@ window.closeTaskModal = closeTaskModal;
 window.saveTaskChanges = saveTaskChanges;// Configuration - Update this when deploying
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5052/api'  // Development
-    : 'https://your-railway-app-name.up.railway.app/api';
+    : 'https://taskmanager-production-b30a.up.railway.app/api';
 let users = [];
 let projects = [];
 let tasks = [];
